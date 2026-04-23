@@ -4,6 +4,9 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
 import joblib
+import random
+import threading
+import time
 
 load_dotenv()
 
@@ -109,9 +112,61 @@ def login():
         return jsonify({"status": "success", "role": user['role']})
     else:
         return jsonify({"status": "fail"})
+def auto_generate_data():
+    global latest_data
 
+    devices = ["device_1", "device_2", "device_3", "device_4", "device_5"]
+
+    while True:
+        # random mode
+        if random.random() > 0.7:
+            data = [{"device_id": d, "requests": random.randint(500, 1500)} for d in devices]
+        else:
+            data = [{"device_id": d, "requests": random.randint(10, 50)} for d in devices]
+
+        requests_list = [d['requests'] for d in data]
+        avg_requests = sum(requests_list) / len(requests_list)
+
+        prediction = model.predict([[avg_requests]])
+
+        ip = "auto_simulated_ip"
+
+        # ✅ FIXED LOGIC
+        if prediction[0] == 1:
+            result = "DDoS Attack"
+            action = "BLOCK IP"
+
+            if not blocked_collection.find_one({"ip": ip}):
+                blocked_collection.insert_one({"ip": ip})
+
+        else:
+            result = "Normal Traffic"
+            action = "No Action"
+
+        # 📜 save logs
+        logs_collection.insert_one({
+            "ip": ip,
+            "status": result,
+            "requests": avg_requests,
+            "devices": data
+        })
+
+        latest_data = {
+            "status": result,
+            "requests": avg_requests,
+            "action": action,
+            "devices": data
+        }
+
+        print("AUTO DATA:", latest_data)
+
+        time.sleep(2)
 if __name__ == '__main__':
+    t = threading.Thread(target=auto_generate_data)
+    t.daemon = True
+    t.start()
+
     app.run(
-    host='0.0.0.0',
-    port=int(os.environ.get('PORT', 5000))
-)
+        host='0.0.0.0',
+        port=int(os.environ.get('PORT', 5000))
+    )
