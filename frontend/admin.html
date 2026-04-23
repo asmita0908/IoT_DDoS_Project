@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+</head>
+
+<body style="background:black; color:white; text-align:center;">
+
+<h2>🔐 Admin Login</h2>
+
+<input id="user" placeholder="Username"><br><br>
+<input id="pass" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
+
+<hr>
+
+<h2>🚫 Blocked IPs</h2>
+<ul id="ipList"></ul>
+
+<h3>📜 Logs</h3>
+<pre id="logsBox"></pre>
+
+<script>
+
+function login() {
+    fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            username: document.getElementById("user").value,
+            password: document.getElementById("pass").value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "success"){
+            alert("Login Success");
+
+            loadIPs();
+            loadLogs();
+        } else {
+            alert("Wrong Credentials");
+        }
+    });
+}
+
+function loadIPs(){
+    setInterval(() => {
+        fetch('http://127.0.0.1:5000/blocked')
+        .then(res => res.json())
+        .then(data => {
+            let box = document.getElementById("ipList");
+            box.innerHTML = "";
+
+            data.blocked_ips.forEach(obj => {
+                let li = document.createElement("li");
+                li.innerText = obj.ip;
+                li.style.color = "red";
+                box.appendChild(li);
+            });
+        });
+    }, 2000);
+}
+
+function loadLogs(){
+    setInterval(() => {
+        fetch('http://127.0.0.1:5000/logs')
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("logsBox").innerText =
+                JSON.stringify(data.logs, null, 2);
+        });
+    }, 3000);
+}
+
+</script>
+
+</body>
+</html>

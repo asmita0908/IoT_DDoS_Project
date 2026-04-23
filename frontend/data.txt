@@ -1,0 +1,1 @@
+{"action": "BLOCK IP", "devices": [{"device_id": "device_1", "requests": 519}, {"device_id": "device_2", "requests": 503}, {"device_id": "device_3", "requests": 1181}, {"device_id": "device_4", "requests": 1138}, {"device_id": "device_5", "requests": 909}], "requests": 850.0, "status": "DDoS Attack"}

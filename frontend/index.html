@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DDoS Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: url("https://images.unsplash.com/photo-1550751827-4bd374c3f58b") no-repeat center/cover;
+        }
+
+        .overlay {
+            background: rgba(196, 202, 210, 0.75);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            background: rgba(134, 146, 150, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 15px;
+            width: 750px;
+            text-align: center;
+        }
+
+        h2 { color: #010808; }
+
+        #status {
+            font-size: 20px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .normal { background: rgba(16,185,129,0.6); }
+        .attack { background: rgba(220,38,38,0.7); color: white; }
+
+        canvas {
+            background: rgba(145, 167, 192, 0.6);
+            border-radius: 10px;
+        }
+
+        pre {
+            color: #00ffcc;
+            text-align: left;
+            max-height: 150px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="overlay">
+    <div class="card">
+
+        <h2>🚀 IoT DDoS Detection</h2>
+        <h3 id="status">Waiting...</h3>
+
+        <canvas id="trafficChart" height="200"></canvas>
+
+        <h3>📊 Attack History</h3>
+        <pre id="historyBox"></pre>
+
+        <h3 style="color:white">📡 Devices</h3>
+        <ul id="deviceList"></ul>
+
+        <audio id="alertSound" src="alert.mp3"></audio>
+
+    </div>
+</div>
+
+<script>
+let ctx = document.getElementById('trafficChart').getContext('2d');
+
+let chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: [{
+            label: 'Requests',
+            data: [],
+            borderWidth: 2
+        }]
+    }
+});
+
+function updateUI(data) {
+    let time = new Date().toLocaleTimeString();
+
+    chart.data.labels.push(time);
+    chart.data.datasets[0].data.push(data.requests);
+
+    if (chart.data.labels.length > 10) {
+        chart.data.labels.shift();
+        chart.data.datasets[0].data.shift();
+    }
+
+    chart.update();
+
+    let status = document.getElementById("status");
+    status.innerText = data.status;
+
+    if (data.status.includes("DDoS")) {
+        status.className = "attack";
+        document.getElementById("alertSound").play();
+        chart.data.datasets[0].borderColor = "red";
+    } else {
+        status.className = "normal";
+        chart.data.datasets[0].borderColor = "green";
+    }
+
+    // 📡 Devices list
+    let list = document.getElementById("deviceList");
+    list.innerHTML = "";
+
+    data.devices.forEach(d => {
+        let li = document.createElement("li");
+        li.innerText = d.device_id + " → " + d.requests;
+        li.style.color = "white";
+        list.appendChild(li);
+    });
+}
+
+// 🔄 LIVE FETCH FROM BACKEND
+setInterval(() => {
+    fetch('http://127.0.0.1:5000/get-data')
+    .then(res => res.json())
+    .then(data => {
+        updateUI(data);
+    })
+    .catch(err => console.log(err));
+}, 2000);
+</script>
+
+</body>
+</html>

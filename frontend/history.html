@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body style="background:black; color:white;">
+
+<h2>📊 Attack History</h2>
+<pre id="data"></pre>
+
+<script>
+fetch('history.txt')
+.then(res => res.text())
+.then(data => {
+    document.getElementById("data").innerText = data;
+});
+</script>
+
+</body>
+</html>
