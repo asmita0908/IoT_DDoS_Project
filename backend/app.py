@@ -23,12 +23,15 @@ model = joblib.load('../ml_model/model.pkl')
 latest_data = {}
 
 # 🔐 Default admin (run once)
-if not users_collection.find_one({"username": "admin"}):
-    users_collection.insert_one({
-        "username": "admin",
-        "password": "1234",
-        "role": "admin"
-    })
+@app.route('/init')
+def init():
+    if not users_collection.find_one({"username": "admin"}):
+        users_collection.insert_one({
+            "username": "admin",
+            "password": "1234",
+            "role": "admin"
+        })
+    return "Admin Created"
 
 @app.route('/')
 def home():
