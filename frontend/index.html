@@ -128,7 +128,7 @@ function updateUI(data) {
 
 // 🔄 LIVE FETCH FROM BACKEND
 setInterval(() => {
-    fetch('http://127.0.0.1:5000/get-data')
+    fetch('https://ddos-project-xwwf.onrender.com/get-data')
     .then(res => res.json())
     .then(data => {
         updateUI(data);

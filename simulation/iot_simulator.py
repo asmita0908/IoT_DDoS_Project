@@ -2,8 +2,7 @@ import random
 import requests
 import time
 
-URL = "http://127.0.0.1:5000/detect"
-
+URL = "https://ddos-project-xwwf.onrender.com/detect"
 while True:
     devices = []
 

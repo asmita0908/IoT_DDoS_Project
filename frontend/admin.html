@@ -23,7 +23,7 @@
 <script>
 
 function login() {
-    fetch('http://127.0.0.1:5000/login', {
+    fetch('https://ddos-project-xwwf.onrender.com/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -35,7 +35,6 @@ function login() {
     .then(data => {
         if(data.status === "success"){
             alert("Login Success");
-
             loadIPs();
             loadLogs();
         } else {
@@ -46,7 +45,7 @@ function login() {
 
 function loadIPs(){
     setInterval(() => {
-        fetch('http://127.0.0.1:5000/blocked')
+        fetch('https://ddos-project-xwwf.onrender.com/blocked')
         .then(res => res.json())
         .then(data => {
             let box = document.getElementById("ipList");
@@ -64,7 +63,7 @@ function loadIPs(){
 
 function loadLogs(){
     setInterval(() => {
-        fetch('http://127.0.0.1:5000/logs')
+        fetch('https://ddos-project-xwwf.onrender.com/logs')
         .then(res => res.json())
         .then(data => {
             document.getElementById("logsBox").innerText =
