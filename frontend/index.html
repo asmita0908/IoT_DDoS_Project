@@ -58,12 +58,12 @@
 <div class="overlay">
     <div class="card">
 
-        <h2>🚀 IoT DDoS Detection</h2>
+        <h2>IoT DDoS Detection</h2>
         <h3 id="status">Waiting...</h3>
 
         <canvas id="trafficChart" height="200"></canvas>
 
-        <h3>📊 Attack History</h3>
+        <h3> Attack History</h3>
         <pre id="historyBox"></pre>
 
         <h3 style="color:white">📡 Devices</h3>
@@ -126,7 +126,7 @@ function updateUI(data) {
     });
 }
 
-// 🔄 LIVE FETCH FROM BACKEND
+//  LIVE FETCH FROM BACKEND
 setInterval(() => {
     fetch('https://ddos-project-xwwf.onrender.com/get-data')
     .then(res => res.json())
